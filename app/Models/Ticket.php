@@ -9,9 +9,15 @@ class Ticket extends Model
     protected $fillable = [
         'user_id',
         'facility_id',
+        'ticket_code',
         'event_name',
         'purpose',
         'note',
+        'status',
+        'approved_at',
+        'checked_in_at',
+        'completed_at',
+        'cancelled_at',
     ];
 
     public function user()
