@@ -26,4 +26,9 @@ class Facility extends Model
     {
         return $this->belongsTo(SubCategory::class);
     }
+    //relasi ke ticket (One-to-Many)
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }

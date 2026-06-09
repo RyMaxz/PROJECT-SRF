@@ -30,7 +30,7 @@ class Ticket extends Model
         return $this->belongsTo(Facility::class);
     }
 
-    public function generateCode()
+    public static function generateCode()
     {
         $prefix = 'TKT-';
         $lastTicket = self::orderBy('ticket_code', 'desc')->first();
