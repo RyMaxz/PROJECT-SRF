@@ -138,7 +138,7 @@ class TicketResource extends Resource
                 TextColumn::make('status')
                     ->badge(),
                 TextColumn::make('date')
-                    ->date('d M Y')
+                    ->date('d M Y H:i')
                     ->placeholder('-')
                     ->sortable()
                     ->icon('heroicon-o-calendar')
