@@ -31,6 +31,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->collapsibleNavigationGroups()
+            ->sidebarFullyCollapsibleOnDesktop()
             ->brandLogo(fn () => view('components.logo'))
             ->brandLogoHeight(fn () => request()->routeIs('filament.*.auth.*') ? '5rem' : '2.5rem')
             ->colors([

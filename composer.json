@@ -13,7 +13,9 @@
         "laravel/tinker": "^3.0"
     },
     "require-dev": {
+        "edneymatias/antigravity-laravel-kit": "^1.3",
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^2.4",
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",

@@ -13,7 +13,17 @@ class ManageTickets extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->mutateFormDataUsing(function (array $data): array {
+                    return $this->mutateFormDataBeforeCreate($data);
+                }),
         ];
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['ticket_code'] = 'REQ'.now()->format('Ymd').'-'.strtoupper(str()->random(4));
+
+        return $data;
     }
 }

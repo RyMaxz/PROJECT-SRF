@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Tickets;
 use App\Filament\Resources\Tickets\Pages\ManageTickets;
 use App\Models\Ticket;
 use BackedEnum;
+use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -18,6 +20,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -35,34 +38,40 @@ class TicketResource extends Resource
     {
         return $schema
             ->components([
-                Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Select::make('facility_id')
-                    ->relationship('facility', 'name')
-                    ->required(),
-                TextInput::make('ticket_code')
-                    ->required()
-                    ->readOnly()
-                    ->default(fn () => Ticket::generateCode()),
-                TextInput::make('event_name')
-                    ->required(),
-                Textarea::make('purpose')
-                    ->columnSpanFull(),
-                RichEditor::make('note')
-                    ->columnSpanFull(),
-                Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'in_use' => 'In use',
-                        'completed' => 'Completed',
-                        'rejected' => 'Rejected',
-                        'cancelled' => 'Cancelled',
-                    ])
-                    ->default('pending')
-                    ->required(),
-                DateTimePicker::make('approved_at'),
+                Section::make('Reservation Information')
+                    ->schema([
+                        Select::make('user_id')
+                            ->relationship('user', 'name')
+                            ->required(),
+                        Select::make('facility_id')
+                            ->relationship('facility', 'name')
+                            ->required(),
+                        TextInput::make('ticket_code')
+                            ->label('Ticket Code')
+                            ->readOnly()
+                            ->placeholder('Will be generated automatically'),
+                        TextInput::make('event_name')
+                            ->required(),
+                        Textarea::make('purpose')
+                            ->columnSpanFull(),
+                        RichEditor::make('note')
+                            ->columnSpanFull(),
+                        Select::make('status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'approved' => 'Approved',
+                                'in_use' => 'In use',
+                                'completed' => 'Completed',
+                                'rejected' => 'Rejected',
+                                'cancelled' => 'Cancelled',
+                            ])
+                            ->default('pending')
+                            ->required(),
+                        DateTimePicker::make('date')
+                            ->label('Schedule')
+                            ->required(),
+                    ])->columns(2)->columnSpanFull(),
+
             ]);
     }
 
@@ -84,6 +93,9 @@ class TicketResource extends Resource
                     ->columnSpanFull(),
                 TextEntry::make('status')
                     ->badge(),
+                TextEntry::make('date')
+                    ->date('d M Y')
+                    ->placeholder('-'),
                 TextEntry::make('approved_at')
                     ->dateTime()
                     ->placeholder('-'),
@@ -111,20 +123,56 @@ class TicketResource extends Resource
             ->recordTitleAttribute('id')
             ->columns([
                 TextColumn::make('user.name')
+                    ->label('Name')
                     ->searchable()
-                    ->sortable(),
-                TextColumn::make('facility.name')
-                    ->searchable()
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ticket_code')
+                    ->label('Ticket Code')
+                    ->searchable(),
+                TextColumn::make('facility.name')
+                    ->label('Facility')
                     ->searchable(),
                 TextColumn::make('event_name')
+                    ->label('Event Name')
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge(),
+                TextColumn::make('date')
+                    ->date('d M Y')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar')
+                    ->alignCenter(),
                 TextColumn::make('approved_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->dateTime('d M Y H:i')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar')
+                    ->alignCenter()
+                    ->description(function ($record) {
+                        if (! $record->approved_at) {
+                            return match ($record->status) {
+                                'pending' => 'Awaiting approval',
+                                'rejected' => 'Rejected',
+                                'cancelled' => 'Cancelled before approval',
+                                default => null,
+                            };
+                        }
+
+                        return match ($record->status) {
+                            'approved' => 'Approved (Awaiting check-in)',
+                            'in_use' => $record->checked_in_at
+                                ? 'Checked in '.Carbon::parse($record->checked_in_at)->diffForHumans()
+                                : 'In use',
+                            'completed' => $record->completed_at
+                                ? 'Completed '.Carbon::parse($record->completed_at)->diffForHumans()
+                                : 'Completed',
+                            'cancelled' => $record->cancelled_at
+                                ? 'Cancelled '.Carbon::parse($record->cancelled_at)->diffForHumans()
+                                : 'Cancelled',
+                            default => 'Approved',
+                        };
+                    }),
                 TextColumn::make('checked_in_at')
                     ->dateTime()
                     ->sortable()
@@ -149,6 +197,55 @@ class TicketResource extends Resource
                 //
             ])
             ->recordActions([
+                Action::make('approve')
+                    ->label('Approve')
+                    ->color('success')
+                    ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(fn ($record) => $record->update([
+                        'status' => 'approved',
+                        'approved_at' => now(),
+                    ]))->button(),
+                Action::make('reject')
+                    ->label('Reject')
+                    ->color('danger')
+                    ->icon('heroicon-o-x-circle')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'pending')
+                    ->action(fn ($record) => $record->update([
+                        'status' => 'rejected',
+                    ]))->button(),
+                Action::make('checkIn')
+                    ->label('Check In')
+                    ->color('warning')
+                    ->icon('heroicon-o-arrow-right-end-on-rectangle')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'approved')
+                    ->action(fn ($record) => $record->update([
+                        'status' => 'in_use',
+                        'checked_in_at' => now(),
+                    ]))->button(),
+                Action::make('complete')
+                    ->label('Complete')
+                    ->color('success')
+                    ->icon('heroicon-o-check-badge')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => $record->status === 'in_use')
+                    ->action(fn ($record) => $record->update([
+                        'status' => 'completed',
+                        'completed_at' => now(),
+                    ]))->button(),
+                Action::make('cancel')
+                    ->label('Cancel')
+                    ->color('danger')
+                    ->icon('heroicon-o-x-mark')
+                    ->requiresConfirmation()
+                    ->visible(fn ($record) => in_array($record->status, ['pending', 'approved']))
+                    ->action(fn ($record) => $record->update([
+                        'status' => 'cancelled',
+                        'cancelled_at' => now(),
+                    ]))->button(),
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),

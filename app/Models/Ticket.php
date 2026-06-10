@@ -18,6 +18,7 @@ class Ticket extends Model
         'checked_in_at',
         'completed_at',
         'cancelled_at',
+        'date',
     ];
 
     public function user()
@@ -32,16 +33,6 @@ class Ticket extends Model
 
     public static function generateCode()
     {
-        $prefix = 'TKT-';
-        $lastTicket = self::orderBy('ticket_code', 'desc')->first();
-
-        if ($lastTicket) {
-            $lastNumber = (int) substr($lastTicket->ticket_code, strlen($prefix));
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
-
-        return $prefix . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
+        return 'REQ'.now()->format('Ymd').'-'.strtoupper(str()->random(4));
     }
 }
