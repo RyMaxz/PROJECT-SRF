@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Tickets;
 
 use App\Filament\Resources\Tickets\Pages\ManageTickets;
+use App\Models\Facility;
+use App\Models\SubCategory;
 use App\Models\Ticket;
 use BackedEnum;
 use Carbon\Carbon;
@@ -21,6 +23,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -44,12 +47,18 @@ class TicketResource extends Resource
                             ->relationship('user', 'name')
                             ->required(),
                         Select::make('facility_id')
-                            ->relationship('facility', 'name')
+                            ->label('Fasilitas')
+                            ->options(function (Get $get) {
+                                return Facility::query()
+                                    ->where('subcategory_id', $get('subcategory_id'))
+                                    ->pluck('name', 'id');
+                            })
                             ->required(),
-                        TextInput::make('ticket_code')
-                            ->label('Ticket Code')
-                            ->readOnly()
-                            ->placeholder('Will be generated automatically'),
+                        Select::make('subcategory_id')
+                            ->label('Gedung / Sub Kategori')
+                            ->options(SubCategory::pluck('name', 'id'))
+                            ->live()
+                            ->dehydrated(false),
                         TextInput::make('event_name')
                             ->required(),
                         Textarea::make('purpose')
