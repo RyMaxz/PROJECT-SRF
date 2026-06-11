@@ -17,4 +17,9 @@ class SubCategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    // Relasi ke Facility (One-to-Many)
+    public function facilities()
+    {
+        return $this->hasMany(Facility::class);
+    }
 }

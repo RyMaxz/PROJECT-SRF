@@ -52,7 +52,7 @@ class FacilityResource extends Resource
                 return; 
             }
 
-            $category = Category::find($categoryId);
+            $category = Category::whereKey($categoryId)->first();
             if (!$category) {
                 return;
             }
@@ -63,7 +63,7 @@ class FacilityResource extends Resource
 
             // 3. Cek apakah Subkategori dipilih (Karena sekarang opsional)
             if ($subCategoryId) {
-                $subCategory = SubCategory::find($subCategoryId);
+                $subCategory = SubCategory::whereKey($subCategoryId)->first();
                 
                 if ($subCategory) {
                     $name = $subCategory->name;
@@ -87,7 +87,7 @@ class FacilityResource extends Resource
             }
 
             // 4. Cari urutan kode terakhir di database berdasarkan prefix saat ini
-            $lastCode = Facility::where('code', 'like', $prefix . '%')
+            $lastCode = Facility::where('code', 'like', $prefix . '%', 'and')
                 ->orderBy('code', 'desc')
                 ->value('code');
 
