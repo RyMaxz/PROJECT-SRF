@@ -21,6 +21,15 @@ class Ticket extends Model
         'date',
     ];
 
+
+    protected $casts = [
+        'date' => 'datetime',
+        'approved_at' => 'datetime',
+        'checked_in_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
