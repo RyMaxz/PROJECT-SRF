@@ -2,9 +2,6 @@ import { Calendar } from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import idLocale from '@fullcalendar/core/locales/id.js'
-import '@fullcalendar/core/index.css'
-import '@fullcalendar/daygrid/index.css'
-import '@fullcalendar/timegrid/index.css'
 
 window.initReservationCalendar = function (element, events) {
     if (!element) {
