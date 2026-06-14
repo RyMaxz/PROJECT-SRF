@@ -19,11 +19,13 @@ class Ticket extends Model
         'completed_at',
         'cancelled_at',
         'date',
+        'date_end',
     ];
 
 
     protected $casts = [
         'date' => 'datetime',
+        'date_end' => 'datetime', // DITAMBAHKAN kalau kamu sudah punya kolom date_end
         'approved_at' => 'datetime',
         'checked_in_at' => 'datetime',
         'completed_at' => 'datetime',
@@ -42,6 +44,6 @@ class Ticket extends Model
 
     public static function generateCode()
     {
-        return 'REQ'.now()->format('Ymd').'-'.strtoupper(str()->random(4));
+        return 'REQ' . now()->format('Ymd') . '-' . strtoupper(str()->random(4));
     }
 }

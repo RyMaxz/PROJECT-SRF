@@ -2,8 +2,9 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\ReservationCalendar;
+use App\Filament\Widgets\CalendarWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -56,7 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
-                ReservationCalendar::class,
+                CalendarWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -72,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->plugin(FilamentShieldPlugin::make());
+            ->plugin(FilamentShieldPlugin::make())
+            ->plugin(FilamentFullCalendarPlugin::make());
     }
 }

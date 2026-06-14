@@ -80,6 +80,9 @@ class TicketResource extends Resource
                         DateTimePicker::make('date')
                             ->label('Schedule')
                             ->required(),
+                        DateTimePicker::make('date_end')
+                            ->label('End Schedule')
+                            ->required(),
                     ])->columns(2)->columnSpanFull(),
 
             ]);
@@ -104,6 +107,9 @@ class TicketResource extends Resource
                 TextEntry::make('status')
                     ->badge(),
                 TextEntry::make('date')
+                    ->date('d M Y')
+                    ->placeholder('-'),
+                TextEntry::make('date_end')
                     ->date('d M Y')
                     ->placeholder('-'),
                 TextEntry::make('approved_at')
@@ -153,6 +159,13 @@ class TicketResource extends Resource
                     ->sortable()
                     ->icon('heroicon-o-calendar')
                     ->alignCenter(),
+                TextColumn::make('date_end')
+                    ->date('d M Y H:i')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar')
+                    ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('approved_at')
                     ->dateTime('d M Y H:i')
                     ->placeholder('-')
