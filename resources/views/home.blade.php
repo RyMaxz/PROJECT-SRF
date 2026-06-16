@@ -109,7 +109,7 @@
     <main class="min-h-screen pt-16 px-4">
         <div class="max-w-7xl mx-auto">
 
-            <!-- DITAMBAHKAN - Section Hero -->
+            <!-- Section Hero -->
             <div class="py-12 text-center">
                 <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
                     Peminjaman Fasilitas Kampus <br>
@@ -127,7 +127,7 @@
                     <p class="text-sm text-slate-500 mb-6">Silakan masuk ke halaman peminjaman khusus Mahasiswa dan
                         Dosen.</p>
 
-                    <a href="/peminjaman"
+                    <a href="/tickets/create"
                         class="block w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-lg shadow-blue-500/20 transform hover:-translate-y-0.5 transition-all duration-200 text-center">
                         Mulai Peminjaman Sekarang
                     </a>
@@ -143,13 +143,13 @@
                 </div>
             </div>
 
-            <!-- DITAMBAHKAN - Section Calendar -->
+            <!-- Section Calendar -->
             <div class="mt-16 mb-12">
                 <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 p-6 sm:p-8">
                     <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Jadwal Reservasi Fasilitas</h2>
                     <p class="text-slate-600 mb-6">Lihat semua jadwal reservasi fasilitas yang telah disetujui</p>
 
-                    <!-- DITAMBAHKAN - Calendar Container -->
+                    <!-- Calendar Container -->
                     <div id="calendar" class="rounded-lg overflow-hidden border border-slate-200"></div>
                 </div>
             </div>
@@ -157,7 +157,7 @@
         </div>
     </main>
 
-    <!-- DITAMBAHKAN - Modal Detail Event -->
+    <!-- Modal Detail Event -->
     <div id="eventModal" class="fixed inset-0 bg-black/15 flex items-center justify-center z-50 p-4"
         style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
@@ -214,10 +214,10 @@
         </div>
     </div>
 
-    <!-- DITAMBAHKAN - FullCalendar JS -->
+    <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
 
-    <!-- DITAMBAHKAN - Custom Calendar Script -->
+    <!-- Custom Calendar Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
@@ -257,14 +257,14 @@
             calendar.render();
         });
 
-        // DITAMBAHKAN - Fungsi untuk menampilkan modal dengan detail event
+        // Fungsi untuk menampilkan modal dengan detail event
         function showEventModal(event) {
             document.getElementById('eventTicketCode').textContent = event.extendedProps.ticket_code;
             document.getElementById('eventName').textContent = event.extendedProps.event_name;
             document.getElementById('eventFacility').textContent = event.extendedProps.facility;
             document.getElementById('eventUser').textContent = event.extendedProps.user;
 
-            // Format tanggal ke Indonesia
+            // Format tanggal jadi lokal/indonessia
             const startDate = new Date(event.start);
             const formattedDate = startDate.toLocaleDateString('id-ID', {
                 weekday: 'long',
@@ -281,12 +281,12 @@
             document.getElementById('eventModal').style.display = 'flex';
         }
 
-        // DITAMBAHKAN - Fungsi untuk menutup modal
+        // Fungsi untuk menutup modal
         function closeEventModal() {
             document.getElementById('eventModal').style.display = 'none';
         }
 
-        // DITAMBAHKAN - Tutup modal saat klik background
+        // Tutup modal saat klik background
         document.getElementById('eventModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeEventModal();
