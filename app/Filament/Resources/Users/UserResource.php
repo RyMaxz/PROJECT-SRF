@@ -12,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -42,6 +43,10 @@ class UserResource extends Resource
                     ->label('Email address')
                     ->email()
                     ->required(),
+                Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->label('Roles')
+                    ->required(),
                 DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()
@@ -62,6 +67,9 @@ class UserResource extends Resource
                 TextEntry::make('email_verified_at')
                     ->dateTime()
                     ->placeholder('-'),
+                TextEntry::make('roles.name')
+                    ->label('Roles')
+                    ->placeholder('-'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
@@ -81,6 +89,8 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
+                TextColumn::make('roles.name')
+                    ->label('Roles'),
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),

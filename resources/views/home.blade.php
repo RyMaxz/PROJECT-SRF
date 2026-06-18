@@ -249,9 +249,9 @@
                 eventDisplay: 'block',
                 height: 'auto',
                 contentHeight: 'auto',
-                eventBackgroundColor: '#2563eb',
-                eventBorderColor: '#1e40af',
-                eventTextColor: '#ffffff'
+                eventDisplay: 'block',
+                height: 'auto',
+                contentHeight: 'auto'
             });
 
             calendar.render();
@@ -264,9 +264,9 @@
             document.getElementById('eventFacility').textContent = event.extendedProps.facility;
             document.getElementById('eventUser').textContent = event.extendedProps.user;
 
-            // Format tanggal jadi lokal/indonessia
+            // Format tanggal mulai
             const startDate = new Date(event.start);
-            const formattedDate = startDate.toLocaleDateString('id-ID', {
+            const formattedStart = startDate.toLocaleDateString('id-ID', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -274,8 +274,35 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
-            document.getElementById('eventDate').textContent = formattedDate;
 
+            // Kalau ada end date, tampilkan rentang waktunya
+            let formattedDate = formattedStart;
+            if (event.end) {
+                const endDate = new Date(event.end);
+                const sameDay = startDate.toDateString() === endDate.toDateString();
+
+                const formattedEnd = sameDay
+                    // kalau masih di hari yang sama, cukup tampilkan jam selesainya
+                    ?
+                    endDate.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    // kalau beda hari, tampilkan tanggal lengkap juga
+                    :
+                    endDate.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                formattedDate = `${formattedStart} - ${formattedEnd}`;
+            }
+
+            document.getElementById('eventDate').textContent = formattedDate;
             document.getElementById('eventStatus').textContent = event.extendedProps.status.toUpperCase();
 
             document.getElementById('eventModal').style.display = 'flex';

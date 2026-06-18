@@ -16,13 +16,13 @@ class User extends Authenticatable implements FilamentUser
     //** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    // Buat agar hanya EMAIL @project.co yang bisa AKSES ke panel admin
+    // cuman admin yg bisa akses
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@project.co');
+        return $this->hasRole('super_admin');
     }
 
-    // Daftar kolom yang BOLEH diisi lewat input form (keamanan data)
+    // kolom yang bisa diisi
     protected $fillable = [
         'name',
         'email',
