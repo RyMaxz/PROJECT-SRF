@@ -36,7 +36,7 @@ class TicketResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
     protected static string|BackedEnum|null $activeNavigationIcon = Heroicon::Ticket;
 
-    protected static ?string $recordTitleAttribute = 'id';
+    protected static ?string $recordTitleAttribute = 'ticket_code';
 
     public static function form(Schema $schema): Schema
     {
@@ -96,6 +96,9 @@ class TicketResource extends Resource
                     ->label('User'),
                 TextEntry::make('facility.name')
                     ->label('Facility'),
+                TextEntry::make('subcategory.name')
+                    ->label('Sub Facility')
+                    ->placeholder('-'),
                 TextEntry::make('ticket_code'),
                 TextEntry::make('event_name'),
                 TextEntry::make('purpose')

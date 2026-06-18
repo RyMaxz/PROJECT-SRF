@@ -14,9 +14,9 @@ class CalendarWidget extends FullCalendarWidget
     public function fetchEvents(array $fetchInfo): array
     {
         return Ticket::query()
-            ->with(['facility', 'user']) // DITAMBAHKAN
-            ->where('status', 'approved') // DITAMBAHKAN: hanya tampilkan yang approved
-            ->where(function ($query) use ($fetchInfo) { // DIUBAH: filter event yang masuk range calendar
+            ->with(['facility', 'user'])
+            ->where('status', 'approved') // hanya tampilkan yang approved
+            ->where(function ($query) use ($fetchInfo) { // filter event yang masuk range calendar
                 $query->where('date', '<', $fetchInfo['end'])
                     ->where(function ($query) use ($fetchInfo) {
                         $query->where('date_end', '>', $fetchInfo['start'])
@@ -27,7 +27,7 @@ class CalendarWidget extends FullCalendarWidget
             ->map(function (Ticket $ticket) {
                 $start = $ticket->date;
 
-                // DITAMBAHKAN: kalau date_end kosong, default durasi 1 jam
+                // kalau date_end kosong, default durasi 1 jam
                 $end = $ticket->date_end
                     ? $ticket->date_end
                     : Carbon::parse($ticket->date)->addHour();
@@ -35,7 +35,7 @@ class CalendarWidget extends FullCalendarWidget
                 return [
                     'id' => (string) $ticket->id,
 
-                    // DIUBAH: title tampil nama fasilitas + nama kegiatan
+                    // title tampil nama fasilitas + nama kegiatan
                     'title' => ($ticket->facility?->name ?? 'Fasilitas')
                         . ' - '
                         . ($ticket->event_name ?? 'Reservasi'),
@@ -43,7 +43,7 @@ class CalendarWidget extends FullCalendarWidget
                     'start' => $start?->toIso8601String(),
                     'end' => $end?->toIso8601String(),
 
-                    // DITAMBAHKAN: data tambahan kalau nanti mau dipakai untuk detail/modal
+                    // data tambahan kalau nanti mau dipakai untuk detail/modal
                     'extendedProps' => [
                         'ticket_code' => $ticket->ticket_code,
                         'event_name' => $ticket->event_name,

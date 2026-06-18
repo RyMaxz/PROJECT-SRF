@@ -47,7 +47,7 @@
                         <div class="grid gap-5 md:grid-cols-2">
                             <div>
                                 <label for="email" class="mb-1 block text-sm font-medium">
-                                    Email Kampus
+                                    Email Instansi
                                 </label>
 
                                 <input type="email"
@@ -55,7 +55,7 @@
                                        id="email"
                                        value="{{ old('email') }}"
                                        required
-                                       placeholder="contoh@kampus.ac.id"
+                                       placeholder="contoh email@pkl.co"
                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
 
@@ -122,17 +122,32 @@
                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ old('purpose') }}</textarea>
                     </div>
 
-                    <div>
-                        <label for="date" class="mb-1 block text-sm font-medium">
-                            Tanggal & Jam Peminjaman
-                        </label>
+                    <div class="grid gap-5 md:grid-cols-2">
+                        <div>
+                            <label for="date" class="mb-1 block text-sm font-medium">
+                                Tanggal & Jam Mulai
+                            </label>
 
-                        <input type="datetime-local"
-                               name="date"
-                               id="date"
-                               value="{{ old('date') }}"
-                               required
-                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <input type="datetime-local"
+                                   name="date"
+                                   id="date"
+                                   value="{{ old('date') }}"
+                                   required
+                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label for="date_end" class="mb-1 block text-sm font-medium">
+                                Tanggal & Jam Selesai
+                            </label>
+
+                            <input type="datetime-local"
+                                   name="date_end"
+                                   id="date_end"
+                                   value="{{ old('date_end') }}"
+                                   required
+                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
                     </div>
 
                     <div>
