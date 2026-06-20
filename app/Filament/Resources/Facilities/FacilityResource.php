@@ -137,16 +137,17 @@ class FacilityResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('category_id')
-                    ->numeric(),
-                TextEntry::make('subcategory_id')
-                    ->numeric(),
+                TextEntry::make('category.name')
+                    ->label('Category'),
+                TextEntry::make('subcategory.name')
+                    ->label('Subcategory'),
                 TextEntry::make('name'),
                 TextEntry::make('code'),
                 TextEntry::make('capacity')
                     ->numeric(),
                 TextEntry::make('description')
                     ->placeholder('-')
+                    ->html()
                     ->columnSpanFull(),
                 IconEntry::make('is_available')
                     ->boolean(),
