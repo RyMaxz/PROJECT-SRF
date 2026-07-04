@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tickets;
 
 use App\Filament\Resources\Tickets\Pages\ManageTickets;
+use App\Models\Category;
 use App\Models\Facility;
 use App\Models\SubCategory;
 use App\Models\Ticket;
@@ -50,16 +51,34 @@ class TicketResource extends Resource
                         Select::make('facility_id')
                             ->label('Fasilitas')
                             ->options(function (Get $get) {
+
                                 return Facility::query()
                                     ->where('subcategory_id', $get('subcategory_id'))
+                                    ->where('category_id', $get('category_id'))
                                     ->pluck('name', 'id');
                             })
                             ->required(),
                         Select::make('subcategory_id')
-                            ->label('Gedung / Sub Kategori')
+                            ->label('Gedung')
                             ->options(SubCategory::pluck('name', 'id'))
                             ->live()
-                            ->dehydrated(false),
+                            ->dehydrated(false)
+                            ->afterStateUpdated(fn($set) => [
+                                $set('category_id', null),
+                                $set('facility_id', null),
+                            ]),
+                        Select::make('category_id')
+                            ->label('Kategori')
+                            ->options(function (Get $get) {
+                                return Category::query()
+                                    ->whereHas('facilities', function ($query) use ($get) {
+                                        $query->where('subcategory_id', $get('subcategory_id'));
+                                    })
+                                    ->pluck('name', 'id');
+                            })
+                            ->live()
+                            ->dehydrated(false)
+                            ->afterStateUpdated(fn($set) => $set('facility_id', null)),
                         TextInput::make('event_name')
                             ->required(),
                         Textarea::make('purpose')
@@ -96,8 +115,13 @@ class TicketResource extends Resource
                     ->label('User'),
                 TextEntry::make('facility.name')
                     ->label('Facility'),
-                TextEntry::make('subcategory.name')
-                    ->label('Sub Facility')
+                TextEntry::make('facility.subCategory.name')
+                    ->label('Sub Category')
+                    ->placeholder('-'),
+                TextEntry::make('facility.category.name')
+                    ->label('Kategori'),
+                TextEntry::make('facility.category.name')
+                    ->label('Category')
                     ->placeholder('-'),
                 TextEntry::make('ticket_code'),
                 TextEntry::make('event_name'),
@@ -188,13 +212,13 @@ class TicketResource extends Resource
                         return match ($record->status) {
                             'approved' => 'Approved (Awaiting check-in)',
                             'in_use' => $record->checked_in_at
-                                ? 'Checked in '.Carbon::parse($record->checked_in_at)->diffForHumans()
+                                ? 'Checked in ' . Carbon::parse($record->checked_in_at)->diffForHumans()
                                 : 'In use',
                             'completed' => $record->completed_at
-                                ? 'Completed '.Carbon::parse($record->completed_at)->diffForHumans()
+                                ? 'Completed ' . Carbon::parse($record->completed_at)->diffForHumans()
                                 : 'Completed',
                             'cancelled' => $record->cancelled_at
-                                ? 'Cancelled '.Carbon::parse($record->cancelled_at)->diffForHumans()
+                                ? 'Cancelled ' . Carbon::parse($record->cancelled_at)->diffForHumans()
                                 : 'Cancelled',
                             default => 'Approved',
                         };
@@ -218,6 +242,12 @@ class TicketResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('facility.subCategory.name')
+                    ->label('Gedung')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('facility.category.name')
+                    ->label('Kategori')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -228,8 +258,8 @@ class TicketResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status === 'pending')
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn($record) => $record->status === 'pending')
+                    ->action(fn($record) => $record->update([
                         'status' => 'approved',
                         'approved_at' => now(),
                     ]))->button(),
@@ -238,8 +268,8 @@ class TicketResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-o-x-circle')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status === 'pending')
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn($record) => $record->status === 'pending')
+                    ->action(fn($record) => $record->update([
                         'status' => 'rejected',
                     ]))->button(),
                 Action::make('checkIn')
@@ -247,8 +277,8 @@ class TicketResource extends Resource
                     ->color('warning')
                     ->icon('heroicon-o-arrow-right-end-on-rectangle')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status === 'approved')
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn($record) => $record->status === 'approved')
+                    ->action(fn($record) => $record->update([
                         'status' => 'in_use',
                         'checked_in_at' => now(),
                     ]))->button(),
@@ -257,8 +287,8 @@ class TicketResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check-badge')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->status === 'in_use')
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn($record) => $record->status === 'in_use')
+                    ->action(fn($record) => $record->update([
                         'status' => 'completed',
                         'completed_at' => now(),
                     ]))->button(),
@@ -267,8 +297,8 @@ class TicketResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
                     ->requiresConfirmation()
-                    ->visible(fn ($record) => in_array($record->status, ['pending', 'approved']))
-                    ->action(fn ($record) => $record->update([
+                    ->visible(fn($record) => in_array($record->status, ['pending', 'approved']))
+                    ->action(fn($record) => $record->update([
                         'status' => 'cancelled',
                         'cancelled_at' => now(),
                     ]))->button(),

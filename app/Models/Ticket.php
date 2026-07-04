@@ -42,6 +42,16 @@ class Ticket extends Model
         return $this->belongsTo(Facility::class);
     }
 
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     public static function generateCode()
     {
         return 'REQ' . now()->format('Ymd') . '-' . strtoupper(str()->random(4));
