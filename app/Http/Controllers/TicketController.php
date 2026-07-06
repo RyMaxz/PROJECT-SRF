@@ -13,35 +13,39 @@ class TicketController extends Controller
 {
     public function create()
     {
-        // ambil data sub kategori (lokasi/gedung) untuk dropdown pertama
         $subCategories = \App\Models\SubCategory::query()
             ->where('is_active', true)
             ->orderBy('name')
             ->get();
 
-        // ambil data fasilitas, lengkap dengan subcategory_id untuk filter JS
+        $categories = \App\Models\Category::query()
+            ->where('is_active', true) // DITAMBAHKAN - sesuai ERD, categories juga punya is_active
+            ->orderBy('name')
+            ->get();
+
         $facilities = Facility::query()
             ->where('is_available', true)
             ->orderBy('name')
             ->get();
 
-        return view('tickets.create', compact('subCategories', 'facilities'));
+        return view('tickets.create', compact('subCategories', 'categories', 'facilities'));
     }
 
     public function store(Request $request)
     {
         // validasi inputan
         $validated = $request->validate([
-            'email' => ['required', 'email', 'ends_with:@pkl.co'], // validasi email
+            'email' => ['required', 'email', 'ends_with:@pkl.co'],
             'password' => ['required', 'string'],
 
-            'sub_category_id' => ['required', 'exists:sub_categories,id'], // DITAMBAHKAN - validasi lokasi/gedung
-            'facility_id' => ['required', 'exists:facilities,id'], // validasi fasilitas/ticket
+            'sub_category_id' => ['required', 'exists:sub_categories,id'],
+            'category_id' => ['required', 'exists:categories,id'], // DITAMBAHKAN
+            'facility_id' => ['required', 'exists:facilities,id'],
             'event_name' => ['required', 'string', 'max:255'],
             'purpose' => ['nullable', 'string'],
             'note' => ['nullable', 'string'],
             'date' => ['required', 'date_format:Y-m-d\TH:i', 'after_or_equal:now'],
-            'date_end' => ['required', 'date_format:Y-m-d\TH:i', 'after:date'], // DITAMBAHKAN - validasi jam selesai
+            'date_end' => ['required', 'date_format:Y-m-d\TH:i', 'after:date'],
         ], [
             'email.ends_with' => 'Reservasi hanya bisa menggunakan email kampus dengan domain @pkl.co.', // DITAMBAHKAN
             'date_end.after' => 'Jam selesai harus lebih besar dari jam mulai.', // DITAMBAHKAN
@@ -59,18 +63,19 @@ class TicketController extends Controller
                 ]);
         }
 
-        // DITAMBAHKAN - pastikan facility yang dipilih benar-benar milik sub_category yang dipilih
+        // pastikan facility yang dipilih benar-benar milik sub_category yang dipilih
         // mencegah manipulasi form (ubah value lewat devtools)
         $facility = Facility::query()
             ->where('id', $validated['facility_id'])
             ->where('subcategory_id', $validated['sub_category_id'])
+            ->where('category_id', $validated['category_id']) // DITAMBAHKAN
             ->first();
 
         if (! $facility) {
             return back()
                 ->withInput($request->except('password'))
                 ->withErrors([
-                    'facility_id' => 'Fasilitas yang dipilih tidak sesuai dengan lokasi/gedung yang dipilih.',
+                    'facility_id' => 'Fasilitas yang dipilih tidak sesuai dengan lokasi/gedung dan kategori yang dipilih.',
                 ]);
         }
 
