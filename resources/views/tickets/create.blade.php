@@ -22,7 +22,7 @@
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
 
                 {{-- Header --}}
-                <div class="border-b border-gray-100 bg-gradient-to-r from-blue-50 via-white to-white px-8 py-7">
+                <div class="border-b border-gray-100 bg-linear-to-r from-blue-50 via-white to-white px-8 py-7">
                     <h1 class="text-2xl font-bold text-gray-900">
                         Ajukan Ticket Peminjaman Fasilitas
                     </h1>
