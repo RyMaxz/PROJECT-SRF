@@ -9,12 +9,9 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 
-    <!-- DITAMBAHKAN - FullCalendar CSS -->
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 
-    <!-- DITAMBAHKAN - Custom FullCalendar Styling -->
     <style>
-        /* Styling toolbar buttons kalender */
         .fc .fc-button-primary {
             background-color: #2563eb !important;
             /* Biru dasar */
