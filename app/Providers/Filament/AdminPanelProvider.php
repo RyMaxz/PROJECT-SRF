@@ -45,14 +45,6 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->navigationItems([
-                NavigationItem::make('Dashboard')
-                    ->icon('heroicon-o-squares-2x2')
-                    ->activeIcon('heroicon-s-squares-2x2') // Pastikan menggunakan awalan 's' untuk solid
-                    ->url(fn (): string => Dashboard::getUrl())
-                    ->isActiveWhen(fn () => request()->routeIs('filament.admin.pages.dashboard')) // Paksa deteksi route
-                    ->sort(-1),
-            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,
