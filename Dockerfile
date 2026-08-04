@@ -97,7 +97,7 @@ COPY --from=builder /var/www/html /var/www/html
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY supervisord.conf /etc/supervisor/conf.d/laravel.conf
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && rm -rf /var/www/html/node_modules \
