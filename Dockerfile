@@ -84,7 +84,7 @@ RUN apt-get update \
         pcntl \
         pdo_mysql \
         zip \
-    && ln -s /usr/sbin/php-fpm8.3 /usr/local/bin/php-fpm \
+    && ln -s /usr/local/sbin/php-fpm /usr/local/bin/php-fpm \
     && { \
         echo 'opcache.enable=1'; \
         echo 'opcache.enable_cli=0'; \
