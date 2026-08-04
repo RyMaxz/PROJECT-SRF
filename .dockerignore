@@ -1,0 +1,28 @@
+# Git / editor
+.git
+.github
+.gitignore
+.vscode
+.idea
+
+# Local env and secrets
+.env
+.env.*
+!.env.example
+
+# Node / PHP dependencies
+node_modules
+vendor
+
+# Build / cache artifacts
+storage/app/*
+storage/framework/cache/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*.php
+public/build
+public/hot
+
+# Tests and docs
+tests
+README.md
